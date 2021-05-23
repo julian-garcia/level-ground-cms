@@ -26,7 +26,9 @@ function post_single($slug) {
     foreach ($posts as $key => $post) {
       $posts[$key]->acf = get_fields($post->ID);
     }
-    return $posts[0];
+    $content = apply_filters('the_content', $posts[0]->post_content);
+    $obj_merged = (object) array_merge((array) $posts[0], array("content"=>$content));
+    return $obj_merged;
 }
 
 function custom_wp_menu() {
@@ -61,6 +63,33 @@ function event_post_type() {
   );
 }
 
+function style_select_button( $buttons ) {
+    array_unshift( $buttons, 'styleselect' );
+    return $buttons;
+}
+
+function insert_formats( $init_array ) {
+     $style_formats=array(
+        array(
+            'title' => 'Button',
+            'block' => 'a',
+            'classes' => 'button',
+            'wrapper' => false,     
+        ),
+    );
+ 
+    $init_array['style_formats'] = json_encode( $style_formats );
+    return $init_array;
+}
+
+function mte_add_editor_styles() {
+  add_editor_style( 'editor-style.css' );
+}
+
+add_filter( 'mce_buttons_2', 'style_select_button' );
+add_filter( 'tiny_mce_before_init', 'insert_formats' );
+add_action( 'init', 'mte_add_editor_styles' );
+
 add_action('init', 'register_menu' );
 add_action('init', 'event_post_type');
 
@@ -82,6 +111,10 @@ add_action( 'rest_api_init', function () {
     'callback' => 'post_single',
   ));
   register_rest_route('api', '/event/(?P<slug>[a-zA-Z0-9-]+)', array(
+    'methods' => 'GET',
+    'callback' => 'post_single',
+  ));
+  register_rest_route('api', '/page/(?P<slug>[a-zA-Z0-9-]+)', array(
     'methods' => 'GET',
     'callback' => 'post_single',
   ));
