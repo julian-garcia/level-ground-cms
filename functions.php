@@ -63,6 +63,26 @@ function event_post_type() {
   );
 }
 
+function team_member_post_type() {
+  register_post_type('team-member',
+    array(
+      'rewrite' => array('slug' => 'team-members'),
+      'labels' => array(
+        'name' => 'Team Members',
+        'singular_name' => 'Team Member',
+        'add_new_item' => 'Add New Team Member',
+        'edit_item' => 'Edit Team Member'
+      ),
+      'menu_icon' => 'dashicons-admin-users',
+      'public' => true,
+      'has_archive' => false,
+      'supports' => array(
+        'title', 'thumbnail', 'excerpt'
+      )
+    )
+  );
+}
+
 function style_select_button( $buttons ) {
     array_unshift( $buttons, 'styleselect' );
     return $buttons;
@@ -92,6 +112,9 @@ add_action( 'init', 'mte_add_editor_styles' );
 
 add_action('init', 'register_menu' );
 add_action('init', 'event_post_type');
+add_action('init', 'team_member_post_type');
+
+add_theme_support('post-thumbnails');
 
 add_action( 'rest_api_init', function () {
   register_rest_route( 'api', '/post/', array(
@@ -99,6 +122,10 @@ add_action( 'rest_api_init', function () {
     'callback' => 'posts_endpoint'
   ));
   register_rest_route( 'api', '/event/', array(
+    'methods' => 'GET',
+    'callback' => 'posts_endpoint'
+  ));
+  register_rest_route( 'api', '/team-member/', array(
     'methods' => 'GET',
     'callback' => 'posts_endpoint'
   ));
@@ -115,6 +142,10 @@ add_action( 'rest_api_init', function () {
     'callback' => 'post_single',
   ));
   register_rest_route('api', '/page/(?P<slug>[a-zA-Z0-9-]+)', array(
+    'methods' => 'GET',
+    'callback' => 'post_single',
+  ));
+  register_rest_route('api', '/team-member/(?P<slug>[a-zA-Z0-9-]+)', array(
     'methods' => 'GET',
     'callback' => 'post_single',
   ));
