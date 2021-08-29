@@ -63,8 +63,48 @@ function event_post_type() {
   );
 }
 
+function opportunity_post_type() {
+  register_post_type('opportunity',
+    array(
+      'rewrite' => array('slug' => 'opportunities'),
+      'labels' => array(
+        'name' => 'Opportunities',
+        'singular_name' => 'Opportunity',
+        'add_new_item' => 'Add New Opportunity',
+        'edit_item' => 'Edit Opportunity'
+      ),
+      'menu_icon' => 'dashicons-superhero',
+      'public' => true,
+      'has_archive' => false,
+      'supports' => array(
+        'title', 'thumbnail', 'editor', 'excerpt'
+      )
+    )
+  );
+}
+
+function blog_post_type() {
+  register_post_type('member-article',
+    array(
+      'rewrite' => array('slug' => 'blog'),
+      'labels' => array(
+        'name' => 'Members Blog',
+        'singular_name' => 'Members Article',
+        'add_new_item' => 'Add New Members Article',
+        'edit_item' => 'Edit Members Article'
+      ),
+      'menu_icon' => 'dashicons-groups',
+      'public' => true,
+      'has_archive' => false,
+      'supports' => array(
+        'title', 'thumbnail', 'editor', 'excerpt'
+      )
+    )
+  );
+}
+
 function team_member_post_type() {
-  register_post_type('team-member',
+  register_post_type('team',
     array(
       'rewrite' => array('slug' => 'team-members'),
       'labels' => array(
@@ -112,7 +152,9 @@ add_action( 'init', 'mte_add_editor_styles' );
 
 add_action('init', 'register_menu' );
 add_action('init', 'event_post_type');
+add_action('init', 'blog_post_type');
 add_action('init', 'team_member_post_type');
+add_action('init', 'opportunity_post_type');
 
 add_theme_support('post-thumbnails');
 
@@ -125,7 +167,15 @@ add_action( 'rest_api_init', function () {
     'methods' => 'GET',
     'callback' => 'posts_endpoint'
   ));
-  register_rest_route( 'api', '/team-member/', array(
+  register_rest_route( 'api', '/member-article/', array(
+    'methods' => 'GET',
+    'callback' => 'posts_endpoint'
+  ));
+  register_rest_route( 'api', '/opportunity/', array(
+    'methods' => 'GET',
+    'callback' => 'posts_endpoint'
+  ));
+  register_rest_route( 'api', '/team/', array(
     'methods' => 'GET',
     'callback' => 'posts_endpoint'
   ));
@@ -141,11 +191,19 @@ add_action( 'rest_api_init', function () {
     'methods' => 'GET',
     'callback' => 'post_single',
   ));
+  register_rest_route('api', '/member-article/(?P<slug>[a-zA-Z0-9-]+)', array(
+    'methods' => 'GET',
+    'callback' => 'post_single',
+  ));
+  register_rest_route('api', '/opportunity/(?P<slug>[a-zA-Z0-9-]+)', array(
+    'methods' => 'GET',
+    'callback' => 'post_single',
+  ));
   register_rest_route('api', '/page/(?P<slug>[a-zA-Z0-9-]+)', array(
     'methods' => 'GET',
     'callback' => 'post_single',
   ));
-  register_rest_route('api', '/team-member/(?P<slug>[a-zA-Z0-9-]+)', array(
+  register_rest_route('api', '/team/(?P<slug>[a-zA-Z0-9-]+)', array(
     'methods' => 'GET',
     'callback' => 'post_single',
   ));
